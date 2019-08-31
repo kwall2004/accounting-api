@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Accounting.Core.Interfaces.Repositories
 {
-    public interface IRepository<TEntity>
+    public interface IRepository<TEntity, TId>
     {
-        TEntity Create(TEntity entity);
-        IEnumerable<TEntity> Read();
-        TEntity Update(TEntity entity);
-        void Delete(TEntity entity);
+        Task<TEntity> Create(TEntity entity);
+        Task<IEnumerable<TEntity>> Read();
+        Task<TEntity> ReadOne(TId id);
+        Task<TEntity> Update(TEntity entity);
+        Task Delete(TId id);
     }
 }
