@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Accounting.Core.Entities
 {
     public partial class Transaction
     {
+        [Key]
         public int TransId { get; set; }
         public DateTime TransDate { get; set; }
         public string TransDescription { get; set; }

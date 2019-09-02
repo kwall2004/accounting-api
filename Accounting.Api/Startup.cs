@@ -1,14 +1,18 @@
 ﻿using Accounting.Core;
+using Accounting.Core.Entities;
 using Accounting.Infrastructure;
 using Accounting.Infrastructure.Data;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using Microsoft.AspNet.OData.Builder;
+using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OData.Edm;
 using System;
 
 namespace Accounting.Api
@@ -25,6 +29,8 @@ namespace Accounting.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            services.AddOData();
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddDbContext<AppDbContext>(options => options.UseMySQL(Configuration.GetConnectionString("App")));
@@ -52,7 +58,17 @@ namespace Accounting.Api
             }
 
             app.UseHttpsRedirection();
-            app.UseMvc();
+
+            app.UseMvc(b =>
+            {
+                b.MapODataServiceRoute("odata", "odata", GetEdmModel());
+            });
+        }
+        private static IEdmModel GetEdmModel()
+        {
+            ODataConventionModelBuilder builder = new ODataConventionModelBuilder();
+            builder.EntitySet<Transaction>("Transaction");
+            return builder.GetEdmModel();
         }
     }
 }
