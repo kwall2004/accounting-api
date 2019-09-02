@@ -10,6 +10,7 @@ namespace Accounting.Core
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<UseCase<Transaction, int>>().As<IUseCase<Transaction, int>>().InstancePerLifetimeScope();
+            builder.RegisterType<UseCase<Account, int>>().As<IUseCase<Account, int>>().InstancePerLifetimeScope();
         }
     }
 }

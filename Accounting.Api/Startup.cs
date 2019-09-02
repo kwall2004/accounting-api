@@ -2,12 +2,14 @@
 using Accounting.Infrastructure;
 using Accounting.Infrastructure.Data;
 using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace Accounting.Api
 {
@@ -21,17 +23,19 @@ namespace Accounting.Api
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddDbContext<AppDbContext>(options => options.UseMySQL(Configuration.GetConnectionString("App")));
 
             var containerBuilder = new ContainerBuilder();
-
             containerBuilder.RegisterModule(new CoreModule());
             containerBuilder.RegisterModule(new InfrastructureModule());
+            containerBuilder.RegisterModule(new ApiModule());
+            containerBuilder.Populate(services);
 
+            return new AutofacServiceProvider(containerBuilder.Build());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
